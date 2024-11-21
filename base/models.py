@@ -1,55 +1,79 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
+
+class User(AbstractUser):
+    email = models.EmailField(null=True)
+    username = models.CharField(max_length=300, unique=True)
+    password = models.CharField(max_length=300)
+    image = models.FileField()
+    address = models.CharField(max_length=300)
+    contact = models.CharField(max_length=300)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 class ProductType(models.Model):
     name = models.CharField(max_length=100)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
 class Department(models.Model):
-    name = models.CharField(max_length=100)
-    floor = models.IntegerField()
+    name = models.CharField(max_length=300)
+    floor = models.CharField(max_length=300)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.name
 
-class ProductTable(models.Model):
+class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     stock = models.IntegerField()
-    type = models.ForeignKey(ProductType)
-    department = models.ForeignKey(Department, on_delete=models.SET_NULL)
+    type = models.ForeignKey(ProductType,on_delete=models.SET_NULL, null =True)
+    department = models.ManyToManyField(Department, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
-class PurchaseTable(models.Model):
-    product = models.ForeignKey(ProductTable)
+class Purchase(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null =True)
     quantity = models.IntegerField()
     date = models.DateField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    vendor = models.ForeignKey(vendor, on_delete=models.SET_NULL)
+    price = models.FloatField()
+    vendor = models.ForeignKey('vendors', on_delete=models.SET_NULL, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.product
 
-class SalesTable(models.Model):
-    product = models.ForeignKey(ProductTable)
+class Sell(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null =True)
     quantity = models.IntegerField()
     date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     customer_name = models.CharField(max_length=50)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):
         return self.product
 
-class vendor(models.Model):
+class vendors(models.Model):
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     contact = models.CharField(max_length=100)
     email = models.EmailField()
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):
